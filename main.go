@@ -31,10 +31,20 @@ func main() {
 		DBService: &db,
 	}
 
+	// Roles Service
+	rs := services.MongoRoleService{
+		DBService: &db,
+	}
+
 	// Get a UserController instance
 	uc := controllers.UserController{
 		UserService:  &us,
 		TokenService: &ts,
+	}
+
+	// Get a RoleController instance
+	rc := controllers.RoleController{
+		RoleService:  &rs,
 	}
 
 	// Instantiate a new router
@@ -63,6 +73,13 @@ func main() {
 
 		// Emit a jwt token
 		userApi.POST("/jwt", uc.LoginAction)
+	}
+
+	// Roles resource
+	roleApi := r.Group("/api/v1/role")
+	{
+		// Create a new role
+		roleApi.POST("", rc.CreateAction)
 	}
 
 	// Fire up the server
