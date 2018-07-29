@@ -22,7 +22,7 @@ run:
 	export JWT_SECRET_KEY=00ogpQjFQTKh ; 
 	export HOST=localhost:8089 ; 
 	export MONGO_HOST=mongodb://localhost:27017 ; 
-	export MONGO_DATABASE=auth ; 
+	export MONGO_DATABASE=authentication ; 
 	export COOKIE_DOMAIN="" ; 
 	go run main.go
 

@@ -1,19 +1,18 @@
 package controllers
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"authentication/models"
 	"authentication/models/request"
 	"authentication/models/response"
 	"authentication/util/errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"bytes"
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // stub UserService behaviour
@@ -29,7 +28,7 @@ func (us *MockUserService) CreateOne(uReq *mrequest.UserCreate) (*models.User, *
 		return nil, err
 	}
 
-	uRes.ID = bson.NewObjectId()
+	uRes.ID = "some-object-id"
 	uRes.Username = uReq.Username
 	uRes.Email = uReq.Email
 	uRes.Password = uReq.Password
@@ -83,15 +82,15 @@ func TestCreateUserAction(t *testing.T) {
 	// Mock a request
 	body := mrequest.UserCreate{
 		Username: "some-username",
-		Email: "some_email@email.com",
+		Email:    "some_email@email.com",
 		Password: "some-password",
 		Roles: []models.Role{
 			models.Role{
-				Role: "ADMIN",
+				Role:  "ADMIN",
 				Level: 0,
 			},
 			models.Role{
-				Role: "POS",
+				Role:  "POS",
 				Level: 0,
 			},
 		},
@@ -142,15 +141,15 @@ func TestCreateUserAction(t *testing.T) {
 	// Mock a request
 	body = mrequest.UserCreate{
 		Username: "some-username",
-		Email: "error-causing-email",
+		Email:    "error-causing-email",
 		Password: "some-password",
 		Roles: []models.Role{
 			models.Role{
-				Role: "ADMIN",
+				Role:  "ADMIN",
 				Level: 0,
 			},
 			models.Role{
-				Role: "POS",
+				Role:  "POS",
 				Level: 0,
 			},
 		},

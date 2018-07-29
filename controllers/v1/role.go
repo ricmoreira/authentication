@@ -12,9 +12,16 @@ import (
 type (
 	// RoleController represents the controller for operating on the roles resource
 	RoleController struct {
-		RoleService services.RoleService
+		RoleService services.RoleServiceContract
 	}
 )
+
+// NewRoleController is the constructor of RoleController
+func NewRoleController(rs *services.RoleService) *RoleController {
+	return &RoleController{
+		RoleService: rs,
+	}
+}
 
 // CreateAction creates a new role
 func (rc RoleController) CreateAction(c *gin.Context) {

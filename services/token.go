@@ -2,9 +2,11 @@ package services
 
 import (
 	"authentication/config"
+	"authentication/helper"
 	"authentication/models"
 	"authentication/models/request"
 	"authentication/models/response"
+	"authentication/repositories"
 	"authentication/util/errors"
 	"net/http"
 	"net/url"
@@ -12,18 +14,30 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
-
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
+// TokenServiceContract is the abstraction for service layer on token resource
+type TokenServiceContract interface {
+	GenerateToken(request *mrequest.UserLogin) (*models.Token, *http.Cookie, *mresponse.ErrorResponse)
+}
+
 // TokenService provides custom JWT tokens based on request resource
-type MongoTokenService struct {
-	DBService *DBService
+type TokenService struct {
+	userRepository *repositories.UserRepository
+	config         *config.Config
+}
+
+// NewTokenService is the constructor of TokenService
+func NewTokenService(rr *repositories.UserRepository, config *config.Config) *TokenService {
+	return &TokenService{
+		userRepository: rr,
+		config: config,
+	}
 }
 
 // CreateOne saves provided model instance to database
-func (ts *MongoTokenService) GenerateToken(request *mrequest.UserLogin) (*models.Token, *http.Cookie, *mresponse.ErrorResponse) {
+func (this *TokenService) GenerateToken(request *mrequest.UserLogin) (*models.Token, *http.Cookie, *mresponse.ErrorResponse) {
 	// get from env secret key and expiration time
 	secretKey := os.Getenv("JWT_SECRET_KEY")
 	envExpir := os.Getenv("JWT_TOKEN_MIN_EXPIRE")
@@ -33,8 +47,6 @@ func (ts *MongoTokenService) GenerateToken(request *mrequest.UserLogin) (*models
 		return nil, nil, errR
 	}
 
-	u := models.User{}
-
 	// validate request
 	e := errors.ValidateRequest(request)
 	if e != nil {
@@ -42,14 +54,18 @@ func (ts *MongoTokenService) GenerateToken(request *mrequest.UserLogin) (*models
 	}
 
 	// find user in database
-	err = ts.DBService.Users.Find(bson.M{"username": request.Username}).One(&u)
+	userRequest := mrequest.UserRead{
+		Username: request.Username,
+	}
+
+	u, err := this.userRepository.ReadOne(&userRequest)
 	if err != nil {
 		e = errors.HandleErrorResponse(errors.UNAUTHORIZED, nil, err.Error())
 		return nil, nil, e
 	}
 
 	// match password
-	err = Compare(u.Password, request.Password)
+	err = helper.Compare(u.Password, request.Password)
 	if err != nil {
 		e = errors.HandleErrorResponse(errors.UNAUTHORIZED, nil, err.Error())
 		return nil, nil, e
@@ -95,7 +111,7 @@ func (ts *MongoTokenService) GenerateToken(request *mrequest.UserLogin) (*models
 		Value:    encodedToken,
 		Expires:  expir,
 		Path:     "/",
-		Domain:   appenv.MustGetEnv(appenv.COOKIE_DOMAIN),
+		Domain:   this.config.CookieDomain,
 		Secure:   true,
 		HttpOnly: true,
 	}

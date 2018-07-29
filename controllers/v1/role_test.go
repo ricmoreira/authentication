@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // stub RoleService behaviour
@@ -30,7 +29,7 @@ func (us *MockRoleService) CreateOne(uReq *mrequest.RoleCreate) (*models.Role, *
 		return nil, err
 	}
 
-	rRes.ID = bson.NewObjectId()
+	rRes.ID = "some-unique-id"
 	rRes.Role = uReq.Role
 	rRes.Level = uReq.Level
 

@@ -4,72 +4,64 @@ import (
 	"authentication/models"
 	"authentication/models/request"
 	"authentication/models/response"
+	"authentication/repositories"
 	"authentication/util/errors"
-
-	"gopkg.in/mgo.v2/bson"
 )
 
-// UserService performs CRUD operations on users resource
-type UserService interface {
+// UserServiceContract is the abstraction for service layer on roles resource
+type UserServiceContract interface {
 	CreateOne(p *mrequest.UserCreate) (*models.User, *mresponse.ErrorResponse)
 	ReadOne(p *mrequest.UserRead) (*models.User, *mresponse.ErrorResponse)
 	UpdateOne(p *mrequest.UserUpdate) (*models.User, *mresponse.ErrorResponse)
 	DeleteOne(p *mrequest.UserDelete) (*models.User, *mresponse.ErrorResponse)
 }
 
-// MongoReferrerService is a struct that contains a DBService pointer that exposes the referral collection and its database
-type MongoUserService struct {
-	DBService *DBService
+// UserService is the layer between http client and repository for user resource
+type UserService struct {
+	repository *repositories.UserRepository
+}
+
+// NewUserService is the constructor of UserService
+func NewUserService(ur *repositories.UserRepository) *UserService {
+	return &UserService{
+		repository: ur,
+	}
 }
 
 // CreateOne saves provided model instance to database
-func (mus *MongoUserService) CreateOne(request *mrequest.UserCreate) (*models.User, *mresponse.ErrorResponse) {
-
-	u := models.User{}
+func (this *UserService) CreateOne(request *mrequest.UserCreate) (*models.User, *mresponse.ErrorResponse) {
 
 	// validate request
-	err := errors.ValidateRequest(request)
-	if err != nil {
-		return nil, err
-	}
-
-	u.ID = bson.NewObjectId()
-	u.Username = request.Username
-	u.Email = request.Email
-
-	// encript and save password
-	password, e := Encrypt(request.Password)
-
+	e := errors.ValidateRequest(request)
 	if e != nil {
-		errR := errors.HandleErrorResponse(errors.SERVICE_UNAVAILABLE, nil, e.Error())
-		return nil, errR
+		return nil, e
 	}
 
-	u.Password = password
+	u, err := this.repository.CreateOne(request)
 
-	u.Roles = make([]models.Role, len(request.Roles))
-	copy(u.Roles, request.Roles)
-
-	// save user to database
-	if err := mus.DBService.Users.Insert(u); err != nil {
+	if err != nil {
 		errR := errors.HandleErrorResponse(errors.SERVICE_UNAVAILABLE, nil, err.Error())
 		return nil, errR
 	}
 
-	return &u, nil
+	// TODO: implement roles
+	// u.Roles = make([]models.Role, len(request.Roles))
+	// copy(u.Roles, request.Roles)
+
+	return u, nil
 }
 
 // TODO: implement
-func (mus *MongoUserService) ReadOne(p *mrequest.UserRead) (*models.User, *mresponse.ErrorResponse) {
+func (this *UserService) ReadOne(p *mrequest.UserRead) (*models.User, *mresponse.ErrorResponse) {
 	return nil, nil
 }
 
 // TODO: implement
-func (mus *MongoUserService) UpdateOne(p *mrequest.UserUpdate) (*models.User, *mresponse.ErrorResponse) {
+func (this *UserService) UpdateOne(p *mrequest.UserUpdate) (*models.User, *mresponse.ErrorResponse) {
 	return nil, nil
 }
 
 // TODO: implement
-func (mus *MongoUserService) DeleteOne(p *mrequest.UserDelete) (*models.User, *mresponse.ErrorResponse) {
+func (this *UserService) DeleteOne(p *mrequest.UserDelete) (*models.User, *mresponse.ErrorResponse) {
 	return nil, nil
 }

@@ -13,13 +13,21 @@ import (
 type (
 	// UserController represents the controller for operating on the users resource
 	UserController struct {
-		UserService  services.UserService
-		TokenService *services.MongoTokenService
+		UserService  services.UserServiceContract
+		TokenService services.TokenServiceContract
 	}
 )
 
+// NewUserController is the contructor of UserController
+func NewUserController(us *services.UserService, ts *services.TokenService) *UserController{
+	return &UserController{
+		UserService: us,
+		TokenService: ts,
+	}
+}
+
 // CreateAction creates a new user
-func (uc UserController) CreateAction(c *gin.Context) {
+func (this UserController) CreateAction(c *gin.Context) {
 	uReq := mrequest.UserCreate{}
 	json.NewDecoder(c.Request.Body).Decode(&uReq)
 
@@ -29,7 +37,7 @@ func (uc UserController) CreateAction(c *gin.Context) {
 		return
 	}
 
-	uRes, err := uc.UserService.CreateOne(&uReq)
+	uRes, err := this.UserService.CreateOne(&uReq)
 
 	if err != nil {
 		c.JSON(err.HttpCode, err)
@@ -40,7 +48,7 @@ func (uc UserController) CreateAction(c *gin.Context) {
 }
 
 // LoginAction sends a JWT token on a success login request
-func (uc UserController) LoginAction(c *gin.Context) {
+func (this UserController) LoginAction(c *gin.Context) {
 	uReq := mrequest.UserLogin{}
 	json.NewDecoder(c.Request.Body).Decode(&uReq)
 
@@ -50,7 +58,7 @@ func (uc UserController) LoginAction(c *gin.Context) {
 		return
 	}
 
-	uRes, cookie, err := uc.TokenService.GenerateToken(&uReq)
+	uRes, cookie, err := this.TokenService.GenerateToken(&uReq)
 
 	if err != nil {
 		c.JSON(err.HttpCode, err)
