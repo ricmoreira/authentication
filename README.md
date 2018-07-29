@@ -80,8 +80,6 @@ $ aglio -i docs/blueprint/index.apib -o docs/generated/docs.html
 Docs will be available in {{root_path}}/docs/generated/docs.html
 
 
-```
-
 # Postman
 Both a Postman collection and a Postman environment is provided under  
 
