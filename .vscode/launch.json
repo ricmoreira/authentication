@@ -13,7 +13,7 @@
             "env": {
                 "HOST": "localhost:8089",
                 "MONGO_HOST": "mongodb://localhost:27017",
-                "MONGO_DATABASE": "auth",
+                "MONGO_DATABASE": "authentication",
                 "JWT_SECRET_KEY": "00ogpQjFQTKh",
                 "JWT_TOKEN_MIN_EXPIRE": 60,
                 "COOKIE_DOMAIN": false,
@@ -33,7 +33,7 @@
             "env": {
                 "HOST": "localhost:8089",
                 "MONGO_HOST": "mongodb://localhost:27017",
-                "MONGO_DATABASE": "auth",
+                "MONGO_DATABASE": "authentication",
                 "JWT_SECRET_KEY": "00ogpQjFQTKh",
                 "JWT_TOKEN_MIN_EXPIRE": 60,
                 "COOKIE_DOMAIN": false,

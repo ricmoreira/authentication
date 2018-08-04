@@ -5,6 +5,7 @@ import (
 	"authentication/services"
 	"authentication/util/errors"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,16 +20,19 @@ type (
 )
 
 // NewUserController is the contructor of UserController
-func NewUserController(us *services.UserService, ts *services.TokenService) *UserController{
+func NewUserController(us *services.UserService, ts *services.TokenService) *UserController {
 	return &UserController{
-		UserService: us,
+		UserService:  us,
 		TokenService: ts,
 	}
 }
 
 // CreateAction creates a new user
 func (this UserController) CreateAction(c *gin.Context) {
+
 	uReq := mrequest.UserCreate{}
+
+	fmt.Println(uReq)
 	json.NewDecoder(c.Request.Body).Decode(&uReq)
 
 	e := errors.ValidateRequest(&uReq)

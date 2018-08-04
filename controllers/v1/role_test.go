@@ -29,7 +29,6 @@ func (us *MockRoleService) CreateOne(uReq *mrequest.RoleCreate) (*models.Role, *
 		return nil, err
 	}
 
-	rRes.ID = "some-unique-id"
 	rRes.Role = uReq.Role
 	rRes.Level = uReq.Level
 

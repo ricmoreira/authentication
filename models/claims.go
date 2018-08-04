@@ -8,7 +8,7 @@ type (
 	// ErrorResponse represents the token model for token response messages
 	Claims struct {
 		Username string `json:"username"`
-		Roles []Role `json:"roles"`
+		Roles []*Role `json:"roles"`
 
 		jwt.StandardClaims
 	}

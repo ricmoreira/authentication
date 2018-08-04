@@ -1,3 +1,5 @@
+// Inspiration to create dependcy injection came from this post: https://blog.drewolson.org/dependency-injection-in-go/
+
 package containers
 
 import (

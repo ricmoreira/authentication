@@ -6,8 +6,8 @@ import (
 	"context"
 
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
-
 
 // RoleRepository performs CRUD operations on roles resource
 type RoleRepository struct {
@@ -20,34 +20,28 @@ func NewRoleRepository(db *DBCollections) *RoleRepository {
 }
 
 // CreateOne saves provided model instance to database
-func (this *RoleRepository) CreateOne(request *mrequest.RoleCreate) (*models.Role, error) {
+func (this *RoleRepository) CreateOne(request *mrequest.RoleCreate) (*mongo.InsertOneResult, error) {
 
 	// save role to database
-	result, e := this.col.InsertOne(
-		context.Background(),
-		bson.NewDocument(
-			bson.EC.String("role", request.Role),
-			bson.EC.Int32("level", int32(request.Level)),
-		))
-
-	if e != nil {
-		return nil, e
-	}
-
-	r := models.Role{}
-	if str, ok := result.InsertedID.(string); ok {
-		r.ID = str
-	}
-
-	r.Level = request.Level
-	r.Role = request.Role
-
-	return &r, nil
+	return this.col.InsertOne(context.Background(), request)
 }
 
-// TODO: implement
+// ReadOne returns a role based on role and level sent in request
+// TODO: implement better query based on full request and not only the role and the level
 func (this *RoleRepository) ReadOne(p *mrequest.RoleRead) (*models.Role, error) {
-	return nil, nil
+	result := this.col.FindOne(
+		context.Background(),
+		bson.NewDocument(bson.EC.String("role", p.Role), bson.EC.Int32("level", int32(p.Level))),
+	)
+
+	r := models.Role{}
+	err := result.Decode(r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
 }
 
 // TODO: implement

@@ -37,14 +37,19 @@ func (this *RoleService) CreateOne(request *mrequest.RoleCreate) (*models.Role, 
 		return nil, err
 	}
 
-	r, e := this.repository.CreateOne(request)
+	_, e := this.repository.CreateOne(request)
 
 	if e != nil {
 		errR := errors.HandleErrorResponse(errors.SERVICE_UNAVAILABLE, nil, e.Error())
 		return nil, errR
 	}
 
-	return r, nil
+	result := models.Role{
+		Role: request.Role,
+		Level: request.Level,
+	}
+	
+	return &result, nil
 }
 
 // TODO: implement

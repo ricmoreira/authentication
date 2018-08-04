@@ -77,7 +77,7 @@ func (this *TokenService) GenerateToken(request *mrequest.UserLogin) (*models.To
 
 	// assign custom claims
 	claims.Username = u.Username
-	claims.Roles = make([]models.Role, len(u.Roles))
+	claims.Roles = make([]*models.Role, len(u.Roles))
 	copy(claims.Roles, u.Roles)
 
 	// prepare token expiration

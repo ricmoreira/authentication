@@ -33,7 +33,7 @@ func (us *MockUserService) CreateOne(uReq *mrequest.UserCreate) (*models.User, *
 	uRes.Email = uReq.Email
 	uRes.Password = uReq.Password
 
-	uRes.Roles = make([]models.Role, len(uReq.Roles))
+	uRes.Roles = make([]*models.Role, len(uReq.Roles))
 	copy(uRes.Roles, uReq.Roles)
 
 	// save user to database
@@ -84,12 +84,12 @@ func TestCreateUserAction(t *testing.T) {
 		Username: "some-username",
 		Email:    "some_email@email.com",
 		Password: "some-password",
-		Roles: []models.Role{
-			models.Role{
+		Roles: []*models.Role{
+			&models.Role{
 				Role:  "ADMIN",
 				Level: 0,
 			},
-			models.Role{
+			&models.Role{
 				Role:  "POS",
 				Level: 0,
 			},
@@ -143,12 +143,12 @@ func TestCreateUserAction(t *testing.T) {
 		Username: "some-username",
 		Email:    "error-causing-email",
 		Password: "some-password",
-		Roles: []models.Role{
-			models.Role{
+		Roles: []*models.Role{
+			&models.Role{
 				Role:  "ADMIN",
 				Level: 0,
 			},
-			models.Role{
+			&models.Role{
 				Role:  "POS",
 				Level: 0,
 			},

@@ -6,6 +6,7 @@ import (
 	"authentication/models/response"
 	"authentication/repositories"
 	"authentication/util/errors"
+	"github.com/mongodb/mongo-go-driver/bson/objectid"
 )
 
 // UserServiceContract is the abstraction for service layer on roles resource
@@ -18,13 +19,13 @@ type UserServiceContract interface {
 
 // UserService is the layer between http client and repository for user resource
 type UserService struct {
-	repository *repositories.UserRepository
+	userRepository *repositories.UserRepository
 }
 
 // NewUserService is the constructor of UserService
-func NewUserService(ur *repositories.UserRepository) *UserService {
+func NewUserService(ur *repositories.UserRepository, rr *repositories.RoleRepository) *UserService {
 	return &UserService{
-		repository: ur,
+		userRepository: ur,
 	}
 }
 
@@ -37,18 +38,24 @@ func (this *UserService) CreateOne(request *mrequest.UserCreate) (*models.User, 
 		return nil, e
 	}
 
-	u, err := this.repository.CreateOne(request)
+	res, err := this.userRepository.CreateOne(request)
 
 	if err != nil {
 		errR := errors.HandleErrorResponse(errors.SERVICE_UNAVAILABLE, nil, err.Error())
 		return nil, errR
 	}
 
-	// TODO: implement roles
-	// u.Roles = make([]models.Role, len(request.Roles))
-	// copy(u.Roles, request.Roles)
+	id := res.InsertedID.(objectid.ObjectID)
+	u := models.User{
+		ID: id.Hex(),
+		Username: request.Username,
+		Email: request.Email,
+	}
 
-	return u, nil
+	u.Roles = make([]*models.Role, len(request.Roles))
+	copy(u.Roles, request.Roles)
+
+	return &u, nil
 }
 
 // TODO: implement
