@@ -23,7 +23,7 @@ func NewMiddleware(cf *config.Config) *Middleware {
 // Cors returns a handler to deal with CORS
 func (m *Middleware) Cors() *gin.HandlerFunc {
 	corsMid := cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:4200", "http://127.0.0.1:4200"},
+		AllowOrigins: []string{"http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:8089"},
 		AllowMethods: []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{"Accept-Encoding", "Accept-Language", "Access-Control-Request-Headers", "Access-Control-Request-Method", "Cache-Control", "Connection",
 			"Host", "Origin", "Pragma", "User-Agent", "X-Custom-Header", "access-control-allow-origin", "authorization", "Origin", "Content-Type", "Accept", "Key", "Keep-Alive", "User-Agent", "If-Modified-Since", "Cache-Control", "Content-Type"},

@@ -46,14 +46,15 @@ func (this *UserRepository) CreateOne(request *mrequest.UserCreate) (*mongo.Inse
 
 // ReadOne returns a user based on username sent in request
 // TODO: implement better query based on full request and not only the username
-func (this *UserRepository) ReadOne(p *mrequest.UserRead) (*models.User, error) {
+func (this *UserRepository) ReadOne(req *mrequest.UserRead) (*models.User, error) {
 	result := this.users.FindOne(
 		context.Background(),
-		bson.NewDocument(bson.EC.String("username", p.Username)),
+		bson.NewDocument(bson.EC.String("username", req.Username)),
 	)
 
+
 	u := models.User{}
-	err := result.Decode(u)
+	err := result.Decode(&u)
 
 	if err != nil {
 		return nil, err

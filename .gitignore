@@ -16,3 +16,6 @@ Makefile
 
 # Dependencies
 vendor/
+
+# Debug
+debug
